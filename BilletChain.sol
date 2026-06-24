@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-// Pour me rappeler
 // Compte Organisateur (A1) : 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4
 // Premier Acheteur   (A2) : 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2
 // Deuxième Acheteur  (A3) : 0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db
@@ -118,6 +117,39 @@ contract BilletChain {
         balancesToWithdraw[formalOwner] += msg.value;
 
         emit TicketResold(_ticketId, formalOwner, msg.sender, msg.value);
+    }
+
+    // =========================================================================
+    // FONCTIONNALITÉ 3 : ENCAISSEMENT DES REVENUS (Sécurisation des retraits)
+    // =========================================================================
+    function claimEarnings() external {
+        uint256 revenue = balancesToWithdraw[msg.sender];
+        
+        // Bloque les appels inutiles si le solde est nul
+        require(revenue > 0, "Aucun fonds a retirer");
+
+        // Protection Anti-Réentrance (Règle CEI : Modification du solde AVANT l'envoi)
+        balancesToWithdraw[msg.sender] = 0;
+
+        // Transfert physique de l'argent natif de la blockchain
+        (bool executionSuccess, ) = payable(msg.sender).call{value: revenue}("");
+        require(executionSuccess, "Echec du transfert");
+    }
+
+    // =========================================================================
+    // FONCTIONNALITÉ 4 : CONSULTATION ÉCONOME (Optimisation du Gas)
+    // =========================================================================
+    // La mention "external view" garantit la gratuité totale de lecture hors transaction
+    function getOnSaleCount(uint256[] calldata _ticketIds) external view returns (uint256) {
+        uint256 totalOnSale = 0;
+        
+        // Boucle hautement optimisée en lecture pure directe (Calldata / Storage)
+        for (uint256 i = 0; i < _ticketIds.length; i++) {
+            if (tickets[_ticketIds[i]].isAvailableForSale) {
+                totalOnSale++;
+            }
+        }
+        return totalOnSale;
     }
 }
 

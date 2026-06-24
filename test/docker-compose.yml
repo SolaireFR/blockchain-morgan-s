@@ -1,0 +1,11 @@
+services:
+  foundry:
+    image: ghcr.io/foundry-rs/foundry:latest
+    container_name: foundry_testnet
+    volumes:
+      - .:/app
+    working_dir: /app
+    # Force le conteneur à rester actif en tâche de fond
+    entrypoint: ["tail", "-f", "/dev/null"]
+    tty: true
+    stdin_open: true

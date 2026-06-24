@@ -32,3 +32,16 @@ Je copie l'adresse en dessous du nom du contrat et je l'utilise dans **_oracleAd
 9. Function buySecondHandTicket (1) (value: 210)
 10. Account 2
 11. Function claimEarnings ()
+
+### 5. Effectuer les tests
+1. Lancer Foundry
+```bash
+cd test/
+docker compose -p "foundry" up -d
+```
+2. Lancer le Tests
+```bash
+docker compose -p "foundry" exec foundry forge test -vvv
+```
+
+### *Doc créé sans IA par Morgan SECRETIN (moi UwU). L'IA Gemini a aidé pour lancer Foundry et pour la revue de code. (et un peu les ecrits théorie mais revue et check de mon coté)*

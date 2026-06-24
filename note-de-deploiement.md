@@ -19,3 +19,16 @@ Dans la section "Deployed Contracts", il y a les infos du contrat.
 ![Feed](address-feed.png)
 
 Je copie l'adresse en dessous du nom du contrat et je l'utilise dans **_oracleAddress**.
+
+### 4. Utilisation du site
+1. Osaka + Account 1
+2. Deploy PriceFeedMock
+3. Deploy BilletChain (20,20,id PriceFeedMock)
+4. Account 2
+5. Function buyTicket (200)
+6. Function tickets (1)
+7. Function putTicketOnSale (1, 210)
+8. Account 3
+9. Function buySecondHandTicket (1) (value: 210)
+10. Account 2
+11. Function claimEarnings ()

@@ -1,6 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+// Pour me rappeler
+// Compte Organisateur (A1) : 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4
+// Premier Acheteur   (A2) : 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2
+// Deuxième Acheteur  (A3) : 0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db
+// Oracle de Taux    (Feed) : 0xf8e81D47203A594245E36C48e151709F0C19fBe8
+
 // Interface pour l'Oracle de prix (ex: Chainlink)
 interface IPriceFeed {
     function getLatestPrice() external view returns (uint256);
@@ -70,4 +76,49 @@ contract BilletChain {
 
         emit TicketPurchased(ticketId, msg.sender, msg.value);
     }
+
+    // =========================================================================
+    // FONCTIONNALITÉ 2 : REVENTE (Marché secondaire entre particuliers)
+    // =========================================================================
+    
+    // Étape A : Le détenteur met sa place en vente
+    function putTicketOnSale(uint256 _ticketId, uint256 _resalePriceWei) external {
+        Ticket storage ticket = tickets[_ticketId];
+        
+        // Sécurité : Seul le vrai possesseur du billet peut initier la vente
+        require(ticket.owner == msg.sender, "Vous n'etes pas le proprietaire");
+        
+        // Règle du TP : Limite anti-spéculation bloquée à 110% maximum du prix de départ
+        uint256 maxPriceAllowed = (ticket.initialPriceWei * 110) / 100;
+        require(_resalePriceWei <= maxPriceAllowed, "Prix au-dessus du plafond de 110%");
+
+        // Enregistrement des conditions du marché
+        ticket.resalePriceWei = _resalePriceWei;
+        ticket.isAvailableForSale = true;
+
+        emit TicketPutOnSale(_ticketId, _resalePriceWei);
+    }
+
+    // Étape B : Un second acheteur valide le rachat de l'occasion
+    function buySecondHandTicket(uint256 _ticketId) external payable {
+        Ticket storage ticket = tickets[_ticketId];
+
+        // Vérifications de validité de la vente
+        require(ticket.isAvailableForSale, "Ce billet n'est pas en vente");
+        require(msg.value == ticket.resalePriceWei, "Montant paye incorrect");
+
+        address formalOwner = ticket.owner;
+
+        // Mutation de la propriété du billet
+        ticket.owner = msg.sender;
+        ticket.isAvailableForSale = false;
+        ticket.resalePriceWei = 0; // Sortie automatique du marché secondaire
+
+        // Transfert comptable des fonds vers le vendeur (Pattern Pull)
+        balancesToWithdraw[formalOwner] += msg.value;
+
+        emit TicketResold(_ticketId, formalOwner, msg.sender, msg.value);
+    }
 }
+
+// Vive les commentaires

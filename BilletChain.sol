@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-// Compte Organisateur (A1) : 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4
-// Premier Acheteur   (A2) : 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2
-// Deuxième Acheteur  (A3) : 0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db
-// Oracle de Taux    (Feed) : 0xf8e81D47203A594245E36C48e151709F0C19fBe8
+// A1 : 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4
+// A2 : 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2
+// A3 : 0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db
+// Taux Feed : 0xf8e81D47203A594245E36C48e151709F0C19fBe8
 
 // Interface pour l'Oracle de prix (ex: Chainlink)
 interface IPriceFeed {
